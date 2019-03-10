@@ -16,8 +16,8 @@
 
 struct Node {
   int value;
-  struct Node* left_subtree;
-  struct Node* right_subtree;
+  struct Node* left;
+  struct Node* right;
 };
 
 Bst new_bst()
@@ -27,40 +27,73 @@ Bst new_bst()
 
 void delete_bst(Bst bst)
 {
-  if (bst != 0)
+  if (bst == 0)
   {
-    sfree(bst);
+    return;
   }
+  delete_bst(bst->left); //Deleting left subtree
+  delete_bst(bst->right); // Deleting right subtree
+  sfree(bst);
 }
 
 int get_depth(Bst bst)
 {
-  if (bst != 0)
+  if(bst == 0)
   {
-    if (bst->left_subtree != 0 || bst->right_subtree != 0)
-    {
-      return 2;
-    }
-    return 1;
+      return 0;
   }
   else
-  return 0;
+  {
+    int lchild = get_depth(bst->left);
+    int rchild = get_depth(bst->right);
+
+    if(lchild <= rchild)
+    {
+      return rchild+1;
+    }
+    else
+    {
+      return lchild+1;
+    }
+  }
 }
 
 void add(Bst* bst, int value)
 {
   Node* new_node = (struct Node*)malloc(sizeof(struct Node*));
   new_node->value = value;
-  new_node->left_subtree = 0;
-  new_node->right_subtree = 0;
+  new_node->left = 0;
+  new_node->right = 0;
 
-  if (*bst == 0)
+  if ((*bst) == 0)
   {
-    *bst = new_node;
+    (*bst) = new_node;
+    return;
   }
-  else if (*bst != 0)
-  {
 
+  if (value <= (*bst)->value)
+  {
+    if ((*bst)->left == 0)
+    {
+      (*bst)->left = new_node;
+    }
+    else
+    {
+      Node* bst_to_add = (*bst)->left;
+      add(&bst_to_add, value);
+    }
+  }
+  else
+  {
+    if ((*bst)->right == 0)
+    {
+      (*bst)->right = new_node;
+    }
+    else
+    {
+      Node* bst_to_add = (*bst)->right;
+      add(&bst_to_add, value);
+    }
   }
 
 }
@@ -76,12 +109,12 @@ int root_value(Bst bst)
 
 Bst left_subtree(Bst root)
 {
-  return root->left_subtree;
+  return root->left;
 }
 
 Bst right_subtree(Bst root)
 {
-  return root->right_subtree;
+  return root->right;
 }
 
 /**
@@ -94,7 +127,12 @@ Bst right_subtree(Bst root)
 */
 int traverse_pre_order(Bst bst, int *elements, int start)
 {
-  return 0;
+  if (bst == 0) return 0;
+  elements[start] = bst->value;
+  start++;
+  traverse_pre_order(bst->left, elements, start);
+  traverse_pre_order(bst->right, elements, start);
+  return start;
 }
 
 /**
@@ -107,7 +145,12 @@ int traverse_pre_order(Bst bst, int *elements, int start)
 */
 int traverse_in_order(Bst bst, int *elements, int start)
 {
-  return 0;
+  if (bst == 0) return 0;
+  traverse_in_order(bst->left, elements, start);
+  elements[start] = bst->value;
+  start++;
+  traverse_in_order(bst->right, elements, start);
+  return start;
 }
 
 /**
@@ -120,7 +163,12 @@ int traverse_in_order(Bst bst, int *elements, int start)
 */
 int traverse_post_order(Bst bst, int *elements, int start)
 {
-  return 0;
+  if (bst == 0) return 0;
+  traverse_pre_order(bst->left, elements, start);
+  traverse_pre_order(bst->right, elements, start);
+  elements[start] = bst->value;
+  start++;
+  return start;
 }
 
 /**
@@ -131,7 +179,14 @@ int traverse_post_order(Bst bst, int *elements, int start)
 */
 bool are_equal(Bst bst1, Bst bst2)
 {
-  return false;
+  if (bst1 == 0 && bst2 == 0) return true;
+  int depth_bst1 = get_depth(bst1);
+  int depth_bst2 = get_depth(bst2);
+  int elements[depth_bst1];
+  traverse_in_order(bst1,elements,0);
+  int elements2[depth_bst2];
+  traverse_in_order(bst2,elements2,0);
+  return (bst1->value == bst2->value && depth_bst1 == depth_bst2) || (elements == elements2);
 }
 
 /**
