@@ -142,11 +142,11 @@ Bst right_subtree(Bst root)
 */
 int traverse_pre_order(Bst bst, int *elements, int start)
 {
-  if (bst == 0) return 0;
+  if(bst == 0) return start;
   elements[start] = bst->value;
   start++;
-  traverse_pre_order(bst->left, elements, start);
-  traverse_pre_order(bst->right, elements, start);
+  start = traverse_pre_order(bst->left, elements, start);
+  start = traverse_pre_order(bst->right, elements, start);
   return start;
 }
 
@@ -160,11 +160,11 @@ int traverse_pre_order(Bst bst, int *elements, int start)
 */
 int traverse_in_order(Bst bst, int *elements, int start)
 {
-  if (bst == 0) return 0;
-  traverse_in_order(bst->left, elements, start);
+  if(bst == 0) return start;
+  start = traverse_in_order(bst->left, elements, start);
   elements[start] = bst->value;
   start++;
-  traverse_in_order(bst->right, elements, start);
+  start = traverse_in_order(bst->right, elements, start);
   return start;
 }
 
@@ -178,13 +178,15 @@ int traverse_in_order(Bst bst, int *elements, int start)
 */
 int traverse_post_order(Bst bst, int *elements, int start)
 {
-  if (bst == 0) return 0;
-  traverse_pre_order(bst->left, elements, start);
-  traverse_pre_order(bst->right, elements, start);
+  if (bst == 0) return start;
+  start = traverse_post_order(bst->left, elements, start);
+  start = traverse_post_order(bst->right, elements, start);
   elements[start] = bst->value;
   start++;
   return start;
 }
+
+bool have_equal_nodes(int* elements, int* elements2, int length);
 
 /**
 *** Checks whether two trees are equal
@@ -194,13 +196,28 @@ int traverse_post_order(Bst bst, int *elements, int start)
 */
 bool are_equal(Bst bst1, Bst bst2)
 {
-  /*
-  if (bst1 == 0 && bst2 == 0) return true;
-  int depth_bst1 = get_depth(bst1);
-  int depth_bst2 = get_depth(bst2);
-  return (bst1->value == bst2->value && depth_bst1 == depth_bst2);
-  */
+  if (bst1 == 0 && bst1 == 0) return true;
+  if (get_depth(bst1) == get_depth(bst2))
+  {
+    int *elements = new int[get_depth(bst1)];
+    traverse_pre_order(bst1,elements, 0);
+    int *elements2 = new int[get_depth(bst2)];
+    traverse_pre_order(bst2,elements2, 0);
+    return (bst1->value == bst2->value && have_equal_nodes(elements,elements2,get_depth(bst1)));
+  }
   return false;
+}
+
+bool have_equal_nodes(int* elements, int* elements2, int length)
+{
+  for (int i = 0; i < length+1; i++)
+  {
+    if (elements[i] != elements2[i])
+    {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
@@ -212,7 +229,7 @@ bool are_equal(Bst bst1, Bst bst2)
 */
 void most_left_longest_branch(Bst bst, Bst* branch)
 {
-
+  
 }
 
 /**
@@ -222,5 +239,7 @@ void most_left_longest_branch(Bst bst, Bst* branch)
 */
 int get_number_of_subtrees(Bst bst)
 {
-  return 0;
+  if (bst == 0) return -1;
+  int *elements = new int[get_depth(bst)];
+  return traverse_pre_order(bst, elements, 0)-1;
 }
