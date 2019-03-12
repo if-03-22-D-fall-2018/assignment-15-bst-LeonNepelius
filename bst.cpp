@@ -229,7 +229,18 @@ bool have_equal_nodes(int* elements, int* elements2, int length)
 */
 void most_left_longest_branch(Bst bst, Bst* branch)
 {
-  
+  if(bst == 0) return;
+
+  if(get_depth(bst->right) > get_depth(bst->left))
+  {
+    add(branch, bst->value);
+    most_left_longest_branch(&(*bst->right), branch);
+  }
+  else if(get_depth(bst->right) <= get_depth(bst->left))
+  {
+    add(branch, bst->value);
+    most_left_longest_branch(&(*bst->left), branch);
+  }
 }
 
 /**
