@@ -186,8 +186,6 @@ int traverse_post_order(Bst bst, int *elements, int start)
   return start;
 }
 
-bool have_equal_nodes(int* elements, int* elements2, int length);
-
 /**
 *** Checks whether two trees are equal
 *** @param bst1 First bst
@@ -203,21 +201,9 @@ bool are_equal(Bst bst1, Bst bst2)
     traverse_pre_order(bst1,elements, 0);
     int *elements2 = new int[get_depth(bst2)];
     traverse_pre_order(bst2,elements2, 0);
-    return (bst1->value == bst2->value && have_equal_nodes(elements,elements2,get_depth(bst1)));
+    return (bst1->value == bst2->value && are_equal(bst1->left, bst2->left) && are_equal(bst1->right, bst2->right));
   }
   return false;
-}
-
-bool have_equal_nodes(int* elements, int* elements2, int length)
-{
-  for (int i = 0; i < length+1; i++)
-  {
-    if (elements[i] != elements2[i])
-    {
-      return false;
-    }
-  }
-  return true;
 }
 
 /**
